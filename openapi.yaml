@@ -1,0 +1,228 @@
+openapi: 3.1.0
+info:
+  title: mailverdict
+  version: 0.1.1
+  description: >
+    Email intelligence API: disposable/burner detection, role-account and
+    free-provider classification, MX validation, typo suggestions.
+    No API key required. Response shape follows the
+    Kickbox/Emailable convention (result/reason/did_you_mean/bare booleans).
+  license:
+    name: MIT
+    identifier: MIT
+servers:
+  - url: https://api.mailverdict.dev
+paths:
+  /v1/check:
+    get:
+      summary: Check a single email address
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema: { type: string }
+        - name: mx
+          in: query
+          description: Set to "false" to skip the MX lookup.
+          schema: { type: string, enum: ["true", "false"] }
+      responses:
+        "200":
+          description: Check result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EmailCheck" }
+        "400":
+          description: Missing email parameter
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    post:
+      summary: Check up to 100 email addresses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [emails]
+              properties:
+                emails:
+                  type: array
+                  maxItems: 100
+                  items: { type: string }
+                mx:
+                  type: boolean
+                  default: true
+      responses:
+        "200":
+          description: Results in input order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/EmailCheck" }
+        "400":
+          description: Invalid body or batch too large
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /v1/check/{email}:
+    get:
+      summary: Check a single email address (path form, URL-encoded)
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema: { type: string }
+        - name: mx
+          in: query
+          schema: { type: string, enum: ["true", "false"] }
+      responses:
+        "200":
+          description: Check result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EmailCheck" }
+  /v1/domain/{domain}:
+    get:
+      summary: Check a domain
+      parameters:
+        - name: domain
+          in: path
+          required: true
+          schema: { type: string }
+        - name: mx
+          in: query
+          schema: { type: string, enum: ["true", "false"] }
+      responses:
+        "200":
+          description: Domain classification
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DomainCheck" }
+        "400":
+          description: Invalid domain
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /v1/changes:
+    get:
+      summary: Freshness feed — domains added/removed since a point in time
+      description: >
+        Burner domains churn daily; this endpoint reports dataset changes so
+        callers can audit freshness or keep a local mirror current. Changes are
+        net-applied across the window (a domain added then removed reports its
+        final state only). Retention is 90 days.
+      parameters:
+        - name: since
+          in: query
+          description: Relative ("24h", "7d") or ISO 8601. Defaults to "24h".
+          schema: { type: string, default: "24h" }
+      responses:
+        "200":
+          description: Net changes since the requested time
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Changes" }
+        "400":
+          description: Unparseable since parameter
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /v1/meta:
+    get:
+      summary: Dataset version and counts
+      responses:
+        "200":
+          description: Dataset metadata
+components:
+  schemas:
+    EmailCheck:
+      type: object
+      properties:
+        email: { type: string, description: Echoed input }
+        user: { type: [string, "null"], description: Local part }
+        domain: { type: [string, "null"] }
+        tag: { type: [string, "null"], description: Sub-address after "+" }
+        normalized_email:
+          type: [string, "null"]
+          description: Dedupe identity (lowercased, tag stripped, gmail dots collapsed)
+        result:
+          type: string
+          enum: [deliverable, undeliverable, risky, unknown]
+        reason:
+          type: string
+          enum: [accepted_email, invalid_email, invalid_domain, no_mx_records,
+                 disposable_email, role_email, possible_typo, timeout]
+        score: { type: integer, minimum: 0, maximum: 100 }
+        valid_syntax: { type: boolean }
+        disposable: { type: boolean }
+        disposable_match:
+          type: [string, "null"]
+          description: Which dataset entry matched (the domain or a parent)
+        role: { type: boolean }
+        free: { type: boolean }
+        mx_found:
+          type: [boolean, "null"]
+          description: null when the MX lookup was skipped
+        mx_records:
+          type: array
+          items: { type: string }
+        did_you_mean:
+          type: [string, "null"]
+          description: Full corrected address for probable typos
+        accept_all:
+          type: "null"
+          description: Reserved until SMTP-level checking ships
+    DomainCheck:
+      type: object
+      properties:
+        domain: { type: string }
+        disposable: { type: boolean }
+        disposable_match: { type: [string, "null"] }
+        free: { type: boolean }
+        did_you_mean: { type: [string, "null"] }
+        mx_found: { type: [boolean, "null"] }
+        mx_records:
+          type: array
+          items: { type: string }
+    Changes:
+      type: object
+      properties:
+        dataset_version: { type: string }
+        since: { type: string, format: date-time }
+        feed_updated_at:
+          type: [string, "null"]
+          format: date-time
+          description: When the feed last verified changes (null before first build)
+        added: { $ref: "#/components/schemas/DomainDelta" }
+        removed: { $ref: "#/components/schemas/DomainDelta" }
+        counts:
+          type: object
+          properties:
+            added: { type: integer }
+            removed: { type: integer }
+        truncated:
+          type: boolean
+          description: Present (true) when a category exceeded the per-response cap
+        note: { type: string }
+    DomainDelta:
+      type: object
+      properties:
+        disposable:
+          type: array
+          items: { type: string }
+        free_providers:
+          type: array
+          items: { type: string }
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string }
+            message: { type: string }

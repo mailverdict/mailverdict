@@ -1,0 +1,30 @@
+# Self-hosted deploy behind a Cloudflare Tunnel. Run an identical copy on two
+# or three hosts, each pointed at the SAME named tunnel (same TUNNEL_TOKEN) —
+# the tunnel load-balances across replicas and survives any one host going down.
+#
+#   cp .env.example .env   # then paste your tunnel token
+#   docker compose up -d --build
+#
+# Cloudflare (dashboard, one-time): create a tunnel, add a public hostname
+# (api.<yourdomain>) → service http://api:8787, and enable edge cache +
+# rate-limit rules on that hostname. Nothing here is exposed to the LAN or
+# internet directly — cloudflared makes the only outbound connection.
+services:
+  api:
+    build: .
+    image: mailverdict:local
+    restart: unless-stopped
+    environment:
+      - PORT=8787
+    # No published ports: reachable only by cloudflared over the compose network.
+    expose:
+      - "8787"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      - api

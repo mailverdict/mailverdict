@@ -1,0 +1,113 @@
+# mailverdict
+
+> Free email intelligence API: disposable/burner email detection, role-account
+> detection, free-provider classification, MX validation, and typo suggestions.
+> No API key required. JSON over HTTPS. Response shape is compatible with the
+> Kickbox/Emailable convention (result / reason / did_you_mean / bare booleans).
+
+Use this at signup to block burner emails, catch typos before they bounce, and
+tag role accounts (info@, admin@) that pollute B2B CRMs.
+
+PRIVACY-CONSCIOUS DEFAULT: if you only need burner/typo screening, check the
+DOMAIN, not the address — GET /v1/domain/{domain} answers disposable/free/typo
+without any email address leaving the caller's system. Use the full email
+check when you also need role detection, normalization, or per-address results.
+
+## Check a domain (recommended default — no PII sent)
+
+GET /v1/domain/example.com
+-> { "domain", "disposable", "disposable_match", "free", "did_you_mean",
+     "mx_found", "mx_records" }
+
+    const domain = email.split('@').pop().toLowerCase()
+    const d = await (await fetch(`https://api.mailverdict.dev/v1/domain/${domain}`)).json()
+    if (d.disposable) reject()
+    if (d.did_you_mean) suggest(email.replace(domain, d.did_you_mean))
+
+## Check one email
+
+GET /v1/check?email=jane@mailinator.com
+
+Response:
+
+    {
+      "email": "jane@mailinator.com",
+      "user": "jane",
+      "domain": "mailinator.com",
+      "tag": null,
+      "normalized_email": "jane@mailinator.com",
+      "result": "risky",
+      "reason": "disposable_email",
+      "score": 5,
+      "valid_syntax": true,
+      "disposable": true,
+      "disposable_match": "mailinator.com",
+      "role": false,
+      "free": false,
+      "mx_found": true,
+      "mx_records": ["mail.mailinator.com"],
+      "did_you_mean": null,
+      "accept_all": null
+    }
+
+Field guide:
+- result: "deliverable" | "undeliverable" | "risky" | "unknown" — branch on this.
+- reason: machine-readable cause: accepted_email, invalid_email, invalid_domain,
+  no_mx_records, disposable_email, role_email, possible_typo, timeout.
+- score: 0-100 quality heuristic (higher is better).
+- normalized_email: lowercased, +tag stripped, gmail dots collapsed — use it to
+  dedupe signups.
+- disposable: domain (or a parent domain, see disposable_match) is a known
+  burner/temp-mail provider.
+- role: local part is a function (admin, info, billing...), not a person.
+- did_you_mean: full corrected address for probable typos
+  ("bob@gmial.com" -> "bob@gmail.com"), null when none.
+- mx_found: true/false when DNS was checked, null when skipped (mx=false).
+- accept_all: reserved (always null until SMTP-level checking ships).
+- Add &mx=false to skip the DNS lookup for lower latency.
+
+## Batch (up to 100)
+
+POST /v1/check
+Content-Type: application/json
+
+    {"emails": ["a@example.com", "b@tempmail.dev"], "mx": false}
+
+Returns {"results": [...]} in input order.
+
+## Burner Feed (what changed, and when)
+
+GET /v1/changes?since=24h — domains added/removed since a point in time.
+since accepts relative forms (24h, 7d) or ISO 8601; window capped at 90 days.
+
+    { "dataset_version", "since", "feed_updated_at",
+      "added": { "disposable": [...], "free_providers": [...] },
+      "removed": { ... }, "counts": { "added", "removed" } }
+
+Burner domains churn daily; a static list cannot answer this endpoint. Use it
+to audit freshness or to keep a local mirror current without refetching
+everything.
+
+## Dataset info
+
+GET /v1/meta — dataset version and entry counts. The dataset aggregates the
+maintained public blocklists (11 sources, permissive licenses only) and is
+rebuilt daily with per-source provenance recorded on every build.
+
+## Typical integration (reject burners at signup)
+
+    const r = await fetch(`https://api.mailverdict.dev/v1/check?email=${encodeURIComponent(email)}`)
+    const check = await r.json()
+    if (check.result === 'undeliverable' || check.disposable) reject()
+    if (check.did_you_mean) suggest(check.did_you_mean)
+    store(check.normalized_email)
+
+## Errors
+
+4xx responses use {"error": {"code", "message"}} — e.g. missing_parameter,
+invalid_json, invalid_body, batch_too_large, invalid_domain.
+
+## MCP
+
+An MCP server ships with the project (`npm run mcp`) exposing check_email and
+check_domain tools over stdio.

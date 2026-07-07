@@ -1,0 +1,121 @@
+import { parseEmail } from './parse'
+import { classifyEmail, classifyDomain, type Dataset } from './classify'
+import { lookupMx } from './mx'
+
+// Response shape follows the de facto industry convention (Kickbox lineage,
+// shared by Emailable/Abstract/Verifalia) so code written against those APIs
+// ports with near-zero edits: result taxonomy, did_you_mean, bare booleans.
+export type CheckVerdict = 'deliverable' | 'undeliverable' | 'risky' | 'unknown'
+
+export interface EmailCheck {
+  email: string
+  user: string | null
+  domain: string | null
+  tag: string | null
+  normalized_email: string | null
+  result: CheckVerdict
+  reason: string
+  score: number
+  valid_syntax: boolean
+  disposable: boolean
+  disposable_match: string | null
+  role: boolean
+  free: boolean
+  mx_found: boolean | null
+  mx_records: string[]
+  did_you_mean: string | null
+  accept_all: null
+}
+
+export interface DomainCheck {
+  domain: string
+  disposable: boolean
+  disposable_match: string | null
+  free: boolean
+  did_you_mean: string | null
+  mx_found: boolean | null
+  mx_records: string[]
+}
+
+function invalidCheck(email: string, parseReason: string | null): EmailCheck {
+  return {
+    email,
+    user: null,
+    domain: null,
+    tag: null,
+    normalized_email: null,
+    result: 'undeliverable',
+    reason: parseReason === 'invalid_domain' ? 'invalid_domain' : 'invalid_email',
+    score: 0,
+    valid_syntax: false,
+    disposable: false,
+    disposable_match: null,
+    role: false,
+    free: false,
+    mx_found: null,
+    mx_records: [],
+    did_you_mean: null,
+    accept_all: null
+  }
+}
+
+export async function checkEmail(email: string, ds: Dataset, withMx: boolean): Promise<EmailCheck> {
+  const parsed = parseEmail(email)
+  if (!parsed.valid) return invalidCheck(email, parsed.reason)
+
+  const c = classifyEmail(parsed, ds)!
+  const mx = withMx ? await lookupMx(parsed.domain!) : null
+  const mxFound = mx === null ? null : mx.checked ? mx.valid : null
+  const didYouMean = c.did_you_mean ? `${parsed.local}@${c.did_you_mean}` : null
+
+  let result: CheckVerdict
+  let reason: string
+  let score: number
+  if (mx?.checked && !mx.valid) {
+    result = 'undeliverable'; reason = 'no_mx_records'; score = 2
+  } else if (c.disposable) {
+    result = 'risky'; reason = 'disposable_email'; score = 5
+  } else if (c.role_account) {
+    result = 'risky'; reason = 'role_email'; score = 60
+  } else if (didYouMean) {
+    result = 'risky'; reason = 'possible_typo'; score = 40
+  } else if (mx !== null && !mx.checked) {
+    result = 'unknown'; reason = 'timeout'; score = 70
+  } else {
+    result = 'deliverable'; reason = 'accepted_email'; score = mxFound === true ? 95 : 85
+  }
+
+  return {
+    email,
+    user: parsed.local,
+    domain: parsed.domain,
+    tag: parsed.tag,
+    normalized_email: parsed.canonical,
+    result,
+    reason,
+    score,
+    valid_syntax: true,
+    disposable: c.disposable,
+    disposable_match: c.disposable_match,
+    role: c.role_account,
+    free: c.free_provider,
+    mx_found: mxFound,
+    mx_records: mx?.records ?? [],
+    did_you_mean: didYouMean,
+    accept_all: null
+  }
+}
+
+export async function checkDomain(domain: string, ds: Dataset, withMx: boolean): Promise<DomainCheck> {
+  const c = classifyDomain(domain, ds)
+  const mx = withMx ? await lookupMx(domain) : null
+  return {
+    domain,
+    disposable: c.disposable,
+    disposable_match: c.disposable_match,
+    free: c.free_provider,
+    did_you_mean: c.did_you_mean,
+    mx_found: mx === null ? null : mx.checked ? mx.valid : null,
+    mx_records: mx?.records ?? []
+  }
+}

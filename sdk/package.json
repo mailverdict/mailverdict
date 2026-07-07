@@ -1,0 +1,26 @@
+{
+  "name": "mailverdict",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "Email intelligence with living data: disposable/role/free detection that calls the live API and falls back to a bundled offline snapshot.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mailverdict/mailverdict.git",
+    "directory": "sdk"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

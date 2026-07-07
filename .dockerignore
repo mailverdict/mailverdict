@@ -1,0 +1,12 @@
+node_modules
+dist
+*.log
+.env
+.git
+.github
+test
+docs
+sdk
+README.md
+CLAUDE.md
+wrangler.toml

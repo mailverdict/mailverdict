@@ -1,0 +1,123 @@
+{
+  "version": "2026-07-06",
+  "built_at": "2026-07-06T09:11:42.302Z",
+  "counts": {
+    "disposable": 78052,
+    "free_providers": 4662,
+    "roles": 1018,
+    "allowlist_removed": 75,
+    "free_overlap_removed": 8176
+  },
+  "sources": [
+    {
+      "name": "disposable-email-domains",
+      "kind": "disposable",
+      "url": "https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/main/disposable_email_blocklist.conf",
+      "license": "CC0-1.0",
+      "repo": "https://github.com/disposable-email-domains/disposable-email-domains",
+      "status": "ok",
+      "count": 7892,
+      "skipped": 0
+    },
+    {
+      "name": "disposable-email-domains/allowlist (pinned)",
+      "kind": "allowlist",
+      "url": "https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/02e480c6f933b8e5e0bc9695171f28cf3f7dbf50/allowlist.conf",
+      "license": "CC0-1.0",
+      "repo": "https://github.com/disposable-email-domains/disposable-email-domains",
+      "status": "ok",
+      "count": 189,
+      "skipped": 0
+    },
+    {
+      "name": "disposable/disposable-email-domains",
+      "kind": "disposable",
+      "url": "https://raw.githubusercontent.com/disposable/disposable-email-domains/master/domains.txt",
+      "license": "MIT",
+      "repo": "https://github.com/disposable/disposable",
+      "status": "ok",
+      "count": 74438,
+      "skipped": 0
+    },
+    {
+      "name": "groundcat/disposable-email-domain-list",
+      "kind": "disposable",
+      "url": "https://raw.githubusercontent.com/groundcat/disposable-email-domain-list/master/domains.txt",
+      "license": "MIT",
+      "repo": "https://github.com/groundcat/disposable-email-domain-list",
+      "status": "ok",
+      "count": 17003,
+      "skipped": 9
+    },
+    {
+      "name": "groundcat/allowlist",
+      "kind": "allowlist",
+      "url": "https://raw.githubusercontent.com/groundcat/disposable-email-domain-list/master/allowlist.txt",
+      "license": "MIT",
+      "repo": "https://github.com/groundcat/disposable-email-domain-list",
+      "status": "ok",
+      "count": 457,
+      "skipped": 0
+    },
+    {
+      "name": "mailchecker",
+      "kind": "disposable",
+      "url": "https://raw.githubusercontent.com/FGRibreau/mailchecker/master/list.txt",
+      "license": "MIT",
+      "repo": "https://github.com/FGRibreau/mailchecker",
+      "status": "ok",
+      "count": 56360,
+      "skipped": 0
+    },
+    {
+      "name": "burner-email-providers",
+      "kind": "disposable",
+      "url": "https://raw.githubusercontent.com/wesbos/burner-email-providers/master/emails.txt",
+      "license": "MIT",
+      "repo": "https://github.com/wesbos/burner-email-providers",
+      "status": "ok",
+      "count": 27260,
+      "skipped": 19
+    },
+    {
+      "name": "fakefilter",
+      "kind": "disposable",
+      "url": "https://raw.githubusercontent.com/7c/fakefilter/main/txt/data.txt",
+      "license": "BSD-3-Clause",
+      "repo": "https://github.com/7c/fakefilter",
+      "status": "ok",
+      "count": 10161,
+      "skipped": 4
+    },
+    {
+      "name": "unkn0w/disposable-email-domain-list",
+      "kind": "disposable",
+      "url": "https://raw.githubusercontent.com/unkn0w/disposable-email-domain-list/main/domains.txt",
+      "license": "MIT",
+      "repo": "https://github.com/unkn0w/disposable-email-domain-list",
+      "status": "ok",
+      "count": 3618,
+      "skipped": 0
+    },
+    {
+      "name": "free-email-domains",
+      "kind": "free_provider",
+      "url": "https://raw.githubusercontent.com/Kikobeats/free-email-domains/master/domains.json",
+      "license": "MIT",
+      "repo": "https://github.com/Kikobeats/free-email-domains",
+      "status": "ok",
+      "count": 12838,
+      "skipped": 0
+    },
+    {
+      "name": "role-based-email-addresses",
+      "kind": "role",
+      "url": "https://raw.githubusercontent.com/mixmaxhq/role-based-email-addresses/master/src/index.js",
+      "license": "MIT",
+      "repo": "https://github.com/mixmaxhq/role-based-email-addresses",
+      "status": "ok",
+      "count": 1018,
+      "skipped": 0
+    }
+  ]
+}

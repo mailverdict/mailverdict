@@ -1,0 +1,65 @@
+export interface ParsedEmail {
+  input: string
+  valid: boolean
+  reason: string | null
+  local: string | null
+  domain: string | null
+  /** Sub-address tag (the part after "+"), if present. */
+  tag: string | null
+  /** Lowercased, tag stripped, gmail dots collapsed — the dedupe identity. */
+  canonical: string | null
+}
+
+const LOCAL_CHARS = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+$/i
+const DOMAIN_RE = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/
+
+const DOT_COLLAPSING_PROVIDERS = new Set(['gmail.com', 'googlemail.com'])
+
+function invalid(input: string, reason: string): ParsedEmail {
+  return { input, valid: false, reason, local: null, domain: null, tag: null, canonical: null }
+}
+
+export function parseEmail(input: string): ParsedEmail {
+  const trimmed = input.trim()
+  if (trimmed.length === 0) return invalid(input, 'empty')
+  if (trimmed.length > 254) return invalid(input, 'too_long')
+
+  const at = trimmed.lastIndexOf('@')
+  if (at <= 0 || at === trimmed.length - 1) return invalid(input, 'missing_at_or_part')
+
+  const local = trimmed.slice(0, at)
+  const domain = trimmed.slice(at + 1).toLowerCase()
+
+  if (local.length > 64) return invalid(input, 'local_too_long')
+  if (!LOCAL_CHARS.test(local)) return invalid(input, 'invalid_local_characters')
+  if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) {
+    return invalid(input, 'invalid_local_dots')
+  }
+  if (domain.length > 253 || !DOMAIN_RE.test(domain)) return invalid(input, 'invalid_domain')
+
+  const plus = local.indexOf('+')
+  const baseLocal = plus === -1 ? local : local.slice(0, plus)
+  const tag = plus === -1 ? null : local.slice(plus + 1)
+  if (baseLocal.length === 0) return invalid(input, 'empty_local_before_tag')
+
+  let canonicalLocal = baseLocal.toLowerCase()
+  if (DOT_COLLAPSING_PROVIDERS.has(domain)) canonicalLocal = canonicalLocal.replaceAll('.', '')
+
+  return {
+    input,
+    valid: true,
+    reason: null,
+    local,
+    domain,
+    tag,
+    canonical: `${canonicalLocal}@${domain}`
+  }
+}
+
+export function parseDomain(input: string): { valid: boolean; domain: string | null } {
+  const domain = input.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '')
+  if (domain.length === 0 || domain.length > 253 || !DOMAIN_RE.test(domain)) {
+    return { valid: false, domain: null }
+  }
+  return { valid: true, domain }
+}

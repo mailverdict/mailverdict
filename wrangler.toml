@@ -1,0 +1,20 @@
+# Cloudflare Workers deployment (production).
+# Deploy: `npx wrangler login` then `npx wrangler deploy`.
+# Local test without auth: `npx wrangler dev`.
+name = "mailverdict"
+main = "src/worker.ts"
+compatibility_date = "2026-07-01"
+
+# The custom domain is the only route (no workers.dev fallback). Requires the
+# mailverdict.dev zone in the target account; wrangler creates the DNS record
+# and certificate on deploy.
+workers_dev = false
+routes = [
+  { pattern = "api.mailverdict.dev", custom_domain = true }
+]
+
+# Bundle the repo-root agent docs as text so the worker serves them exactly
+# like the Node entry does from disk.
+rules = [
+  { type = "Text", globs = ["**/*.txt", "**/*.yaml"] }
+]
