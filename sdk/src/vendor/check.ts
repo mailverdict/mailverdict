@@ -75,12 +75,16 @@ export async function checkEmail(email: string, ds: Dataset, withMx: boolean): P
   let score: number
   if (mx?.checked && !mx.valid) {
     result = 'undeliverable'; reason = 'no_mx_records'; score = 2
+  } else if (didYouMean) {
+    // A close typo of a major provider is almost always a real user's slip, so
+    // surfacing the correction beats a burner/role label — even when the
+    // squatted domain also sits on the disposable list (disposable stays true
+    // in the booleans for callers that hard-block).
+    result = 'risky'; reason = 'possible_typo'; score = 40
   } else if (c.disposable) {
     result = 'risky'; reason = 'disposable_email'; score = 5
   } else if (c.role_account) {
     result = 'risky'; reason = 'role_email'; score = 60
-  } else if (didYouMean) {
-    result = 'risky'; reason = 'possible_typo'; score = 40
   } else if (mx !== null && !mx.checked) {
     result = 'unknown'; reason = 'timeout'; score = 70
   } else {

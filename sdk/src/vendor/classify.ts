@@ -89,15 +89,14 @@ export function suggestDomain(domain: string, maxDistance?: number): string | nu
 export function classifyDomain(domain: string, ds: Dataset): DomainClassification {
   const disposableMatch = matchDomain(domain, ds.disposable)
   const freeProvider = matchDomain(domain, ds.freeProviders) !== null
-  // Typo suggestions: never for disposable domains (they're real, just burner)
-  // and never for POPULAR domains themselves. Free-list domains still get
-  // distance-1 suggestions because that list contains typo-squats of the
-  // majors (gmial.com is literally on it); unknown domains get the full
-  // distance budget.
-  let didYouMean: string | null = null
-  if (disposableMatch === null) {
-    didYouMean = freeProvider ? suggestDomain(domain, 1) : suggestDomain(domain)
-  }
+  // Typo suggestions fire even for disposable/free-listed domains: squatters
+  // register the common typos (gmial.com, gmaill.com), and for a mistyped
+  // address the correction is the most useful signal. Listed domains use a
+  // tight distance-1 budget, so genuine burners (mailinator.com — never within
+  // one edit of a major provider) still get nothing; unknown domains get the
+  // wider budget. POPULAR domains themselves never self-suggest.
+  const listed = disposableMatch !== null || freeProvider
+  const didYouMean = listed ? suggestDomain(domain, 1) : suggestDomain(domain)
   return {
     domain,
     disposable: disposableMatch !== null,

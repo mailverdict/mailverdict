@@ -94,10 +94,17 @@ describe('suggestDomain', () => {
     expect(c.did_you_mean).toBe('gmail.com')
   })
 
-  it('never fires for disposable domains', () => {
-    const c = classifyDomain('gmaill.com', ds)
-    expect(c.disposable).toBe(true)
-    expect(c.did_you_mean).toBeNull()
+  it('suggests corrections for disposable typo-squats, but not genuine burners', () => {
+    // gmaill.com is a typo-squat of gmail.com that also sits on the disposable
+    // list — the correction is the useful signal, so it IS suggested.
+    const squat = classifyDomain('gmaill.com', ds)
+    expect(squat.disposable).toBe(true)
+    expect(squat.did_you_mean).toBe('gmail.com')
+    // mailinator.com is a real burner service, not within one edit of any major
+    // provider, so it gets no suggestion.
+    const burner = classifyDomain('mailinator.com', ds)
+    expect(burner.disposable).toBe(true)
+    expect(burner.did_you_mean).toBeNull()
   })
 })
 
@@ -130,6 +137,14 @@ describe('checkEmail (mx disabled — no network in tests)', () => {
     expect(r.did_you_mean).toBe('bob@gmail.com')
     expect(r.result).toBe('risky')
     expect(r.reason).toBe('possible_typo')
+  })
+
+  it('surfaces the typo suggestion over the burner label for a disposable squat', async () => {
+    const r = await checkEmail('bob@gmaill.com', ds, false)
+    expect(r.did_you_mean).toBe('bob@gmail.com')
+    expect(r.reason).toBe('possible_typo')
+    expect(r.result).toBe('risky')
+    expect(r.disposable).toBe(true) // still flagged for callers that hard-block
   })
 
   it('passes clean addresses as deliverable with null mx_found', async () => {
