@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { parseDomain } from './lib/parse'
 import { checkEmail, checkDomain } from './lib/check'
+import { handleMcpMessage, MCP_PARSE_ERROR } from './mcp-http'
 import type { Dataset } from './lib/classify'
 import type { Changelog } from './data'
 
@@ -34,6 +35,7 @@ export function createApp(ds: Dataset, changelog?: Changelog) {
       docs: '/llms.txt',
       openapi: '/openapi.yaml',
       endpoints: ['/v1/check?email=', '/v1/check/{email}', 'POST /v1/check (batch)', '/v1/domain/{domain}', '/v1/changes?since=24h', '/v1/meta'],
+      mcp: 'POST /mcp (keyless remote MCP server; tools: check_email, check_domain)',
       note: 'Free. No API key required.'
     })
   )
@@ -128,6 +130,27 @@ export function createApp(ds: Dataset, changelog?: Changelog) {
       ...(note ? { note } : {})
     })
   })
+
+  // Keyless remote MCP server (stateless Streamable HTTP). Agents POST
+  // JSON-RPC here to discover and call the check_email / check_domain tools.
+  app.post('/mcp', async c => {
+    let body: unknown
+    try {
+      body = await c.req.json()
+    } catch {
+      return c.json(MCP_PARSE_ERROR, 400)
+    }
+    const response = await handleMcpMessage(body, ds)
+    // Notifications only -> nothing to send.
+    if (response === null) return c.body(null, 202)
+    return c.json(response)
+  })
+
+  // This server is stateless and does not offer a server-to-client SSE stream,
+  // so the GET half of the Streamable HTTP transport is unsupported.
+  app.get('/mcp', c =>
+    c.json({ jsonrpc: '2.0', id: null, error: { code: -32000, message: 'This MCP server is stateless; use JSON-RPC over POST. GET/SSE is not supported.' } }, 405)
+  )
 
   return app
 }

@@ -238,3 +238,79 @@ describe('/v1/changes feed', () => {
     expect(body.note).toContain('not yet available')
   })
 })
+
+describe('remote MCP server (/mcp)', () => {
+  const rpc = async (body: unknown) => {
+    const { createApp } = await import('../src/app')
+    const app = createApp(ds)
+    return app.request('/mcp', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+  }
+
+  it('handshakes on initialize and advertises tools capability', async () => {
+    const res = await rpc({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18' } })
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.result.serverInfo.name).toBe('mailverdict')
+    expect(body.result.capabilities.tools).toBeDefined()
+    expect(body.result.protocolVersion).toBe('2025-06-18')
+  })
+
+  it('lists check_email and check_domain with input schemas', async () => {
+    const body = await (await rpc({ jsonrpc: '2.0', id: 2, method: 'tools/list' })).json()
+    const names = body.result.tools.map((t: { name: string }) => t.name)
+    expect(names).toEqual(['check_email', 'check_domain'])
+    expect(body.result.tools[0].inputSchema.required).toEqual(['email'])
+  })
+
+  it('calls check_email and returns the check as tool text', async () => {
+    const body = await (await rpc({
+      jsonrpc: '2.0', id: 3, method: 'tools/call',
+      params: { name: 'check_email', arguments: { email: 'jane@mailinator.com', mx: false } }
+    })).json()
+    const payload = JSON.parse(body.result.content[0].text)
+    expect(payload.disposable).toBe(true)
+    expect(payload.result).toBe('risky')
+    expect(body.result.isError).toBeUndefined()
+  })
+
+  it('calls check_domain', async () => {
+    const body = await (await rpc({
+      jsonrpc: '2.0', id: 4, method: 'tools/call',
+      params: { name: 'check_domain', arguments: { domain: 'gmail.com', mx: false } }
+    })).json()
+    const payload = JSON.parse(body.result.content[0].text)
+    expect(payload.free).toBe(true)
+  })
+
+  it('flags a bad tool argument as an isError result, not a protocol error', async () => {
+    const body = await (await rpc({
+      jsonrpc: '2.0', id: 5, method: 'tools/call', params: { name: 'check_email', arguments: {} }
+    })).json()
+    expect(body.result.isError).toBe(true)
+  })
+
+  it('returns JSON-RPC errors for unknown method and unknown tool', async () => {
+    const unknownMethod = await (await rpc({ jsonrpc: '2.0', id: 6, method: 'no/such' })).json()
+    expect(unknownMethod.error.code).toBe(-32601)
+    const unknownTool = await (await rpc({
+      jsonrpc: '2.0', id: 7, method: 'tools/call', params: { name: 'nope', arguments: {} }
+    })).json()
+    expect(unknownTool.error.code).toBe(-32602)
+  })
+
+  it('accepts notifications with 202 and no body', async () => {
+    const res = await rpc({ jsonrpc: '2.0', method: 'notifications/initialized' })
+    expect(res.status).toBe(202)
+    expect(await res.text()).toBe('')
+  })
+
+  it('rejects a GET with 405 (stateless: no SSE stream)', async () => {
+    const { createApp } = await import('../src/app')
+    const res = await createApp(ds).request('/mcp')
+    expect(res.status).toBe(405)
+  })
+})

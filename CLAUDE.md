@@ -28,6 +28,10 @@ Requires Node >= 20 (uses global fetch, AbortSignal.timeout).
   churn, which would poison the freshness feed).
 - `src/lib/` — pure logic, no I/O except `mx.ts` (DNS-over-HTTPS so Node and
   edge runtimes share one code path). `check.ts` composes the public response.
+- `src/mcp-http.ts` — the hosted remote MCP server: a stateless JSON-RPC
+  handler (no Durable Objects, so it runs on the free Worker) wired into
+  `app.ts` at `POST /mcp`. Reuses `checkEmail`/`checkDomain`. `src/mcp.ts` is
+  the separate stdio server for local use; keep the two tool lists in sync.
 - `src/app.ts` — Hono app, runtime-agnostic. `worker.ts` (Cloudflare Workers —
   production) and `server.ts` (Node — self-hosting) both wrap it. The worker
   bundles the dataset and docs at deploy time, so dataset refreshes require a

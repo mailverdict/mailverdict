@@ -114,7 +114,12 @@ rebuilt daily with per-source provenance recorded on every build.
 4xx responses use {"error": {"code", "message"}} — e.g. missing_parameter,
 invalid_json, invalid_body, batch_too_large, invalid_domain.
 
-## MCP
+## MCP (Model Context Protocol)
 
-An MCP server ships with the project (`npm run mcp`) exposing check_email and
-check_domain tools over stdio.
+Hosted, keyless remote MCP server — no signup, no local install:
+
+    POST https://api.mailverdict.dev/mcp
+
+Stateless Streamable HTTP transport (JSON-RPC 2.0). Tools: check_email,
+check_domain (same signals as the REST API). Point any MCP client at the URL
+above; a stdio server also ships in the repo (`npm run mcp`) for local use.

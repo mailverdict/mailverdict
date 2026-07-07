@@ -80,16 +80,28 @@ const check = await createClient().checkEmail(input)
 if (check.disposable) reject()          // check.source: 'live' | 'snapshot'
 ```
 
-npm publish pending; see [sdk/README.md](sdk/README.md).
+Published on npm as [`mailverdict`](https://www.npmjs.com/package/mailverdict);
+see [sdk/README.md](sdk/README.md).
 
 ## MCP server
+
+**Hosted, keyless remote server** — point any MCP client at:
+
+```
+POST https://api.mailverdict.dev/mcp
+```
+
+Stateless Streamable HTTP (JSON-RPC 2.0), no signup or key. Tools:
+`check_email`, `check_domain`.
+
+A stdio server also ships for local use:
 
 ```bash
 npm run mcp   # stdio transport; tools: check_email, check_domain
 ```
 
-Register in Claude Code: `claude mcp add mailverdict -- npx tsx src/mcp.ts`
-(run from this directory).
+Register the local one in Claude Code:
+`claude mcp add mailverdict -- npx tsx src/mcp.ts` (run from this directory).
 
 ## Architecture
 
