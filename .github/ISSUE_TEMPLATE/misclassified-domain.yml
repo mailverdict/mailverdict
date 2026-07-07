@@ -1,0 +1,40 @@
+name: Report a misclassified domain
+description: A domain is incorrectly flagged as disposable, free-provider, or role — or a burner domain is missing.
+title: "[dataset] "
+labels: ["dataset"]
+body:
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+      placeholder: example.com
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: What's wrong?
+      options:
+        - Flagged as disposable, but it's a legitimate mail provider
+        - Flagged as free-provider incorrectly
+        - A disposable/burner domain that is NOT being flagged
+        - Other (explain below)
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: >
+        Anything that helps verify: how long the domain has operated, its
+        website, whether mailboxes are paid/persistent, MX setup, etc.
+        You can check the current classification at
+        https://api.mailverdict.dev/v1/domain/YOUR-DOMAIN
+    validations:
+      required: true
+  - type: checkboxes
+    id: ownership
+    attributes:
+      label: Relationship
+      options:
+        - label: I own or represent this domain

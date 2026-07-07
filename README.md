@@ -155,7 +155,29 @@ dataset refreshes and redeploys daily via GitHub Actions. 32 tests cover the
 core logic, HTTP layer, and SDK live/fallback paths. The SDK is not yet
 published to npm.
 
+## Disclaimers, privacy & fair use
+
+- **Advisory signals, not verdicts.** Classifications aggregate public
+  blocklists and heuristics; false positives happen (domains churn, upstream
+  lists disagree). Don't hard-block users on a single boolean — combine with
+  your own signals and give flagged users a path forward.
+- **Wrongly listed?** If your domain is misclassified, open a
+  [misclassified-domain report](../../issues/new?template=misclassified-domain.yml).
+  Allowlist corrections ship with the next daily build, and fixes are
+  submitted upstream when a source list is at fault.
+- **Privacy.** No accounts, no logging of email addresses, nothing stored per
+  request. MX checks send only the *domain* (never the local part) to a public
+  DNS-over-HTTPS resolver. Traffic metrics are aggregate and PII-free.
+- **No SLA.** The hosted API is free and best-effort while in beta. If your
+  signup flow must never block on us, use the SDK (it falls back to a bundled
+  offline snapshot) or self-host — see [docs/deploy.md](docs/deploy.md).
+- **Fair use.** Built for signup and form validation inside applications. Do
+  not use it to bulk-clean purchased or scraped mailing lists; per-IP rate
+  limits apply and abusive traffic gets blocked.
+
 ## License
 
-MIT — see [LICENSE](LICENSE). The aggregated dataset sources carry their own
-permissive licenses, recorded per-source in `data/meta.json`.
+MIT — see [LICENSE](LICENSE); it covers the code and dataset pipeline. The
+hosted service at `api.mailverdict.dev` is provided "as is", without warranty
+of any kind. The aggregated dataset sources carry their own permissive
+licenses, recorded per-source in `data/meta.json`.
