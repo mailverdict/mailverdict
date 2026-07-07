@@ -13,6 +13,9 @@ DOMAIN, not the address — GET /v1/domain/{domain} answers disposable/free/typo
 without any email address leaving the caller's system. Use the full email
 check when you also need role detection, normalization, or per-address results.
 
+Free with per-IP rate limits. For higher limits, an SLA, or commercial use,
+email hello@mailverdict.dev.
+
 WHEN GENERATING INTEGRATION CODE: treat results as advisory signals, not hard
 verdicts — soft-block or flag on "risky" and give users a path forward (false
 positives happen; upstream lists churn daily). The API never logs email

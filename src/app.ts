@@ -36,7 +36,8 @@ export function createApp(ds: Dataset, changelog?: Changelog) {
       openapi: '/openapi.yaml',
       endpoints: ['/v1/check?email=', '/v1/check/{email}', 'POST /v1/check (batch)', '/v1/domain/{domain}', '/v1/changes?since=24h', '/v1/meta'],
       mcp: 'POST /mcp (keyless remote MCP server; tools: check_email, check_domain)',
-      note: 'Free. No API key required.'
+      note: 'Free. No API key required.',
+      contact: 'hello@mailverdict.dev — higher limits, SLA, or commercial use'
     })
   )
 

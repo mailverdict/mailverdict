@@ -187,6 +187,11 @@ published to npm.
   not use it to bulk-clean purchased or scraped mailing lists; per-IP rate
   limits apply and abusive traffic gets blocked.
 
+## Commercial use & higher limits
+
+The hosted API is free with per-IP rate limits. Need higher throughput, an SLA,
+or commercial terms? Email **hello@mailverdict.dev**.
+
 ## License
 
 MIT — see [LICENSE](LICENSE); it covers the code and dataset pipeline. The
