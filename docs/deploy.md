@@ -20,11 +20,18 @@ time (~485 KB gzipped, 5 ms startup) — no external storage.
 
 ### Cloudflare dashboard configuration
 
-1. Cache Rule on `api.mailverdict.dev`: cache `/v1/domain/*`, `/v1/meta`,
-   `/llms.txt`, `/openapi.yaml`; short TTL (5–15 min) on `/v1/changes`;
-   **bypass** `/v1/check*` (per-email, and MX lookups are live).
-2. Rate-limiting rule on `api.mailverdict.dev` (N req/min per IP) — the
-   throttle for keyless access; there are no API keys in v1.
+- **Rate-limiting rule** (Security → WAF → Rate limiting rules): URI path
+  starts with `/v1/check` → block when one IP exceeds ~20 requests per
+  10 seconds (the free plan fixes period and block duration at 10 s). WAF and
+  rate limiting evaluate before Workers, so this protects the worker route.
+  This is the throttle for keyless access; there are no API keys in v1.
+- **Caching**: zone Cache Rules do *not* apply to Worker-generated responses,
+  so no dashboard cache configuration is needed (or effective) on this path —
+  responses are generated at the edge from bundled data anyway. If Workers
+  invocation counts ever matter, add the Cache API inside the worker for
+  `/v1/domain/*`, `/v1/meta`, and the doc routes. (On the self-hosted Tunnel
+  path below, standard Cache Rules DO work: cache `/v1/domain/*`, `/v1/meta`,
+  `/llms.txt`, `/openapi.yaml`; bypass `/v1/check*`.)
 
 ## Self-hosting: Docker + Cloudflare Tunnel
 
