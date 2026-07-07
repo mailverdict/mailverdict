@@ -1,26 +1,56 @@
 {
   "name": "mailverdict",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "license": "MIT",
-  "description": "Email intelligence with living data: disposable/role/free detection that calls the live API and falls back to a bundled offline snapshot.",
+  "description": "Email intelligence with living data: disposable/burner, role-account, and free-provider detection that calls the live API and falls back to a bundled offline snapshot.",
+  "keywords": [
+    "email",
+    "email-validation",
+    "email-verification",
+    "disposable-email",
+    "disposable-email-domains",
+    "burner-email",
+    "temporary-email",
+    "role-account",
+    "free-email",
+    "mx",
+    "validation"
+  ],
+  "author": "mailverdict",
+  "homepage": "https://github.com/mailverdict/mailverdict#readme",
+  "bugs": "https://github.com/mailverdict/mailverdict/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mailverdict/mailverdict.git",
+    "url": "git+https://github.com/mailverdict/mailverdict.git",
     "directory": "sdk"
   },
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": ["dist"],
+  "sideEffects": false,
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsup",
+    "prepublishOnly": "tsup"
   },
   "devDependencies": {
+    "tsup": "^8.3.0",
     "typescript": "^5.5.0"
   }
 }

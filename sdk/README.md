@@ -12,6 +12,15 @@ Strictly better than both existing options:
 - safer than a bare API call (network failure degrades to the snapshot instead
   of breaking signup).
 
+## Install
+
+```bash
+npm install mailverdict
+```
+
+Requires Node 18+ (uses global `fetch`). Ships as dual ESM/CJS with TypeScript
+types. No runtime dependencies. Keyless — no API key or signup.
+
 ```ts
 import { createClient } from 'mailverdict'
 
@@ -36,18 +45,13 @@ const offline = createClient({ mode: 'snapshot' })  // no network, period
 Options: `baseUrl` (API origin), `timeoutMs` (budget before fallback, default
 2000), `mode` (`auto` | `live` | `snapshot`).
 
-## Regenerating the offline layer
+## How the offline snapshot stays fresh
+
+The bundled snapshot is regenerated from the live dataset on every release, so
+each published version carries a recent copy. `SNAPSHOT_VERSION` reports the
+build date of the bundled data; the live API always reports its own current
+version via `/v1/meta`.
 
 `src/vendor/` and `src/snapshot.json` are **generated** from the repo's
-canonical logic and dataset — do not edit them here:
-
-```bash
-npm run build:data      # refresh the dataset (repo root)
-npm run build:snapshot  # re-vendor logic + snapshot into the SDK
-```
-
-## Pre-publish TODOs
-
-- Switch the build to tsup (dual ESM/CJS + extension-resolved imports) before
-  the first npm publish; the current `tsc` build assumes bundler consumers.
-- Remove `"private": true` and `npm publish` (the default endpoint is live).
+canonical logic and dataset (`npm run build:snapshot` at the repo root) — they
+are not edited by hand.
