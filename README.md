@@ -149,23 +149,25 @@ freshness is provable via the Burner Feed rather than claimed.
 - [x] Keyless free API — the first call works with zero signup
 - [x] Industry-compatible response shape (Kickbox/Emailable convention: `result`, `reason`, `did_you_mean`, bare booleans)
 - [x] `llms.txt` (agent-operable: endpoint-first, curl-able), OpenAPI spec
-- [x] MCP server (stdio)
+- [x] MCP server — local stdio and **hosted keyless remote** (Streamable HTTP) at `/mcp`
 - [x] Daily automated dataset refresh + auto-deploy
 - [x] Freshness changelog + `/v1/changes` feed (clean-build diffs only; 90-day retention)
-- [x] SDK with bundled snapshot fallback (built + tested)
+- [x] SDK with bundled snapshot fallback, published on npm (`mailverdict`)
 - [x] Production deployment on Cloudflare Workers (`api.mailverdict.dev`)
-- [ ] Publish the SDK to npm; Zod `.refine()` / form-validation snippets
+- [x] Official MCP registry listing (`dev.mailverdict/mailverdict`)
+- [x] Per-IP rate limiting
 - [ ] Detection-lag benchmark: measure and publish how quickly new burner domains enter the dataset
-- [ ] Hosted keyless **remote** MCP server (streamable HTTP) + registry listings
 - [ ] Better Auth plugin (keyless check in the `before-create` hook)
-- [ ] Rate limiting by IP (not key) + optional keys for high volume
+- [ ] Framework snippets (Zod `.refine()`, React Hook Form, server actions)
+- [ ] Optional API keys for high-volume / commercial use
 
 ## Status
 
-v0.1.1 — live at `https://api.mailverdict.dev` (Cloudflare Workers). The
-dataset refreshes and redeploys daily via GitHub Actions. 32 tests cover the
-core logic, HTTP layer, and SDK live/fallback paths. The SDK is not yet
-published to npm.
+v0.1.1 — live at `https://api.mailverdict.dev` (Cloudflare Workers), with a
+hosted keyless remote MCP server at `/mcp` and an official MCP registry
+listing. The dataset refreshes and redeploys daily via GitHub Actions, and the
+`mailverdict` SDK is published on npm. 41 tests cover the core logic, HTTP
+layer, MCP handler, and SDK live/fallback paths.
 
 ## Disclaimers, privacy & fair use
 
