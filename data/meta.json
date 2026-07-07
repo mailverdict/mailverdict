@@ -1,8 +1,8 @@
 {
   "version": "2026-07-07",
-  "built_at": "2026-07-07T04:13:05.405Z",
+  "built_at": "2026-07-07T08:46:19.091Z",
   "counts": {
-    "disposable": 77793,
+    "disposable": 77798,
     "free_providers": 4680,
     "roles": 1018,
     "allowlist_removed": 75,
@@ -16,7 +16,7 @@
       "license": "CC0-1.0",
       "repo": "https://github.com/disposable-email-domains/disposable-email-domains",
       "status": "ok",
-      "count": 7900,
+      "count": 7915,
       "skipped": 0
     },
     {
@@ -36,7 +36,7 @@
       "license": "MIT",
       "repo": "https://github.com/disposable/disposable",
       "status": "ok",
-      "count": 74438,
+      "count": 74442,
       "skipped": 0
     },
     {
