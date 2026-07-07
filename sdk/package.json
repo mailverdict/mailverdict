@@ -1,6 +1,6 @@
 {
   "name": "mailverdict",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "description": "Email intelligence with living data: disposable/burner, role-account, and free-provider detection that calls the live API and falls back to a bundled offline snapshot.",
