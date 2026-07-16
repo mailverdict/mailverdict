@@ -1,12 +1,12 @@
 {
-  "version": "2026-07-15",
-  "built_at": "2026-07-15T07:25:01.107Z",
+  "version": "2026-07-16",
+  "built_at": "2026-07-16T07:32:49.171Z",
   "counts": {
-    "disposable": 77469,
-    "free_providers": 4802,
+    "disposable": 77483,
+    "free_providers": 4794,
     "roles": 1018,
     "allowlist_removed": 75,
-    "free_overlap_removed": 8231
+    "free_overlap_removed": 8236
   },
   "sources": [
     {
@@ -16,7 +16,7 @@
       "license": "CC0-1.0",
       "repo": "https://github.com/disposable-email-domains/disposable-email-domains",
       "status": "ok",
-      "count": 7999,
+      "count": 8003,
       "skipped": 0
     },
     {
@@ -36,7 +36,7 @@
       "license": "MIT",
       "repo": "https://github.com/disposable/disposable",
       "status": "ok",
-      "count": 74505,
+      "count": 74519,
       "skipped": 0
     },
     {
@@ -86,7 +86,7 @@
       "license": "BSD-3-Clause",
       "repo": "https://github.com/7c/fakefilter",
       "status": "ok",
-      "count": 10218,
+      "count": 10235,
       "skipped": 4
     },
     {
@@ -106,7 +106,7 @@
       "license": "MIT",
       "repo": "https://github.com/Kikobeats/free-email-domains",
       "status": "ok",
-      "count": 13033,
+      "count": 13030,
       "skipped": 0
     },
     {
