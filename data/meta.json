@@ -1,12 +1,12 @@
 {
-  "version": "2026-07-17",
-  "built_at": "2026-07-17T07:30:05.349Z",
+  "version": "2026-07-18",
+  "built_at": "2026-07-18T07:11:59.624Z",
   "counts": {
-    "disposable": 77501,
-    "free_providers": 4775,
+    "disposable": 77499,
+    "free_providers": 4740,
     "roles": 1018,
     "allowlist_removed": 75,
-    "free_overlap_removed": 8259
+    "free_overlap_removed": 8288
   },
   "sources": [
     {
@@ -36,7 +36,7 @@
       "license": "MIT",
       "repo": "https://github.com/disposable/disposable",
       "status": "ok",
-      "count": 74528,
+      "count": 74534,
       "skipped": 0
     },
     {
@@ -66,7 +66,7 @@
       "license": "MIT",
       "repo": "https://github.com/FGRibreau/mailchecker",
       "status": "ok",
-      "count": 56360,
+      "count": 56359,
       "skipped": 0
     },
     {
@@ -106,7 +106,7 @@
       "license": "MIT",
       "repo": "https://github.com/Kikobeats/free-email-domains",
       "status": "ok",
-      "count": 13034,
+      "count": 13028,
       "skipped": 0
     },
     {
