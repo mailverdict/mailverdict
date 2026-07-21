@@ -1,12 +1,12 @@
 {
-  "version": "2026-07-20",
-  "built_at": "2026-07-20T08:19:11.588Z",
+  "version": "2026-07-21",
+  "built_at": "2026-07-21T07:43:21.025Z",
   "counts": {
-    "disposable": 77520,
-    "free_providers": 4792,
+    "disposable": 77324,
+    "free_providers": 4899,
     "roles": 1018,
     "allowlist_removed": 75,
-    "free_overlap_removed": 8267
+    "free_overlap_removed": 8249
   },
   "sources": [
     {
@@ -16,7 +16,7 @@
       "license": "CC0-1.0",
       "repo": "https://github.com/disposable-email-domains/disposable-email-domains",
       "status": "ok",
-      "count": 8068,
+      "count": 8069,
       "skipped": 0
     },
     {
@@ -36,7 +36,7 @@
       "license": "MIT",
       "repo": "https://github.com/disposable/disposable",
       "status": "ok",
-      "count": 74549,
+      "count": 74558,
       "skipped": 0
     },
     {
@@ -46,8 +46,8 @@
       "license": "MIT",
       "repo": "https://github.com/groundcat/disposable-email-domain-list",
       "status": "ok",
-      "count": 12368,
-      "skipped": 8
+      "count": 10857,
+      "skipped": 6
     },
     {
       "name": "groundcat/allowlist",
@@ -66,7 +66,7 @@
       "license": "MIT",
       "repo": "https://github.com/FGRibreau/mailchecker",
       "status": "ok",
-      "count": 56359,
+      "count": 56358,
       "skipped": 0
     },
     {
@@ -76,7 +76,7 @@
       "license": "MIT",
       "repo": "https://github.com/wesbos/burner-email-providers",
       "status": "ok",
-      "count": 27260,
+      "count": 27258,
       "skipped": 19
     },
     {
@@ -86,7 +86,7 @@
       "license": "BSD-3-Clause",
       "repo": "https://github.com/7c/fakefilter",
       "status": "ok",
-      "count": 10237,
+      "count": 10240,
       "skipped": 4
     },
     {
@@ -106,7 +106,7 @@
       "license": "MIT",
       "repo": "https://github.com/Kikobeats/free-email-domains",
       "status": "ok",
-      "count": 13059,
+      "count": 13148,
       "skipped": 0
     },
     {
