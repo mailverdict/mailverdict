@@ -1,8 +1,8 @@
 {
-  "version": "2026-08-28",
-  "built_at": "2026-08-28T17:28:34.805Z",
+  "version": "2026-08-29",
+  "built_at": "2026-08-29T11:41:23.209Z",
   "counts": {
-    "disposable": 77258,
+    "disposable": 77265,
     "free_providers": 4772,
     "roles": 1018,
     "allowlist_removed": 74,
@@ -36,7 +36,7 @@
       "license": "MIT",
       "repo": "https://github.com/disposable/disposable",
       "status": "ok",
-      "count": 74910,
+      "count": 74915,
       "skipped": 0
     },
     {
@@ -86,7 +86,7 @@
       "license": "BSD-3-Clause",
       "repo": "https://github.com/7c/fakefilter",
       "status": "ok",
-      "count": 10334,
+      "count": 10351,
       "skipped": 4
     },
     {
