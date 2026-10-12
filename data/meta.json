@@ -1,12 +1,12 @@
 {
-  "version": "2026-10-11",
-  "built_at": "2026-10-11T11:27:11.843Z",
+  "version": "2026-10-12",
+  "built_at": "2026-10-12T13:15:40.004Z",
   "counts": {
-    "disposable": 99326,
-    "free_providers": 2818,
+    "disposable": 99335,
+    "free_providers": 2578,
     "roles": 1018,
     "allowlist_removed": 86,
-    "free_overlap_removed": 11520
+    "free_overlap_removed": 30728
   },
   "sources": [
     {
@@ -16,7 +16,7 @@
       "license": "CC0-1.0",
       "repo": "https://github.com/disposable-email-domains/disposable-email-domains",
       "status": "ok",
-      "count": 9222,
+      "count": 9880,
       "skipped": 0
     },
     {
@@ -86,7 +86,7 @@
       "license": "BSD-3-Clause",
       "repo": "https://github.com/7c/fakefilter",
       "status": "ok",
-      "count": 10593,
+      "count": 10600,
       "skipped": 4
     },
     {
@@ -106,8 +106,8 @@
       "license": "MIT",
       "repo": "https://github.com/Kikobeats/free-email-domains",
       "status": "ok",
-      "count": 14338,
-      "skipped": 0
+      "count": 33306,
+      "skipped": 2
     },
     {
       "name": "role-based-email-addresses",
